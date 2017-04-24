@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jagexappletviewer">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/jagexcache/jagexlauncher/bin/jagexappletviewer.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
