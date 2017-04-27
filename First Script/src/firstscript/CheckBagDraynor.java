@@ -5,10 +5,10 @@ import org.powerbot.script.rt4.GameObject;
 import org.powerbot.script.rt4.TilePath;
 import org.powerbot.script.Tile;
 
-public class CheckBag extends Task<ClientContext> {
-    private int[] treeIds = {1276, 1278};
+public class CheckBagDraynor extends Task<ClientContext> {
+    private int[] treeIds = {1751};
 
-    public CheckBag(ClientContext ctx) {
+    public CheckBagDraynor(ClientContext ctx) {
         super(ctx);
     }
 
@@ -16,53 +16,53 @@ public class CheckBag extends Task<ClientContext> {
     public boolean activate() {
         ctx.objects.select().id(treeIds);
         GameObject tree = ctx.objects.nearest().poll();
-        return (ctx.inventory.select().count() == 28 && !ctx.bank.inViewport())
-                || (ctx.inventory.select().count() < 2 && ctx.bank.opened())
-                || (ctx.bank.nearest().tile().distanceTo(tree) > 35);
+        return (ctx.inventory.select().count() == 28 && !ctx.bank.inViewport() && !ctx.players.local().inMotion())
+                || (ctx.inventory.select().count() < 2 && ctx.bank.opened() && !ctx.players.local().inMotion() && (ctx.bank.nearest().tile().distanceTo(tree) < 35))
+                || (ctx.bank.nearest().tile().distanceTo(tree) < 35);
     }
 
     @Override
     public void execute() {
+        System.out.println("starting CheckBag");
         ctx.objects.select().id(treeIds);
         GameObject tree = ctx.objects.nearest().poll();
-        System.out.println(ctx.bank.nearest().tile().distanceTo(tree));
-
+        System.out.println(tree.name());
         if (ctx.inventory.select().count() == 28 && !ctx.bank.inViewport()) {
             System.out.println("walking to the bank yo, your bags are full dude");
             Tile[] tilesToBank = new Tile[] {
-                    new Tile(3278, 3416, 0),
-                    new Tile(3282, 3412, 0),
-                    new Tile(3286, 3417, 0),
-                    new Tile(3284, 3424, 0),
-                    new Tile(3285, 3430, 0),
-                    new Tile(3284, 3436, 0),
-                    new Tile(3284, 3442, 0),
-                    new Tile(3281, 3448, 0),
-                    new Tile(3279, 3443, 0),
-                    new Tile(3280, 3437, 0),
-                    new Tile(3279, 3431, 0),
-                    new Tile(3279, 3426, 0),
-                    new Tile(3273, 3428, 0),
-                    new Tile(3267, 3428, 0),
-                    new Tile(3261, 3428, 0),
-                    new Tile(3254, 3421, 0)
+                    new Tile(3105, 3285, 0),
+                    new Tile(3103, 3292, 0),
+                    new Tile(3102, 3285, 0),
+                    new Tile(3094, 3282, 0),
+                    new Tile(3086, 3277, 0),
+                    new Tile(3084, 3268, 0),
+                    new Tile(3081, 3259, 0),
+                    new Tile(3084, 3249, 0),
+                    new Tile(3094, 3243, 0)
             };
             TilePath path = ctx.movement.newTilePath(tilesToBank);
             path.traverse();
             if (ctx.bank.nearest().tile().distanceTo(ctx.players.local()) < 10) {
-                ctx.camera.turnTo(ctx.bank.nearest().tile());
+                ctx.movement.step(ctx.bank.nearest());
+                ctx.camera.turnTo(ctx.bank.nearest());
             }
-        } else if(ctx.inventory.select().count() < 2 && ctx.bank.opened()) {
+        } else if((ctx.inventory.select().count() < 2 && ctx.bank.opened()) || (ctx.inventory.select().count() < 2 && ctx.bank.nearest().tile().distanceTo(tree) < 35)) {
             Tile[] tilesToTrees = new Tile[] {
-                    new Tile(3254, 3421, 0),
-                    new Tile(3254, 3428, 0),
-                    new Tile(3263, 3429, 0),
-                    new Tile(3274, 3429, 0),
-                    new Tile(3281, 3423, 0)
+                    new Tile(3094, 3244, 0),
+                    new Tile(3092, 3248, 0),
+                    new Tile(3087, 3248, 0),
+                    new Tile(3082, 3251, 0),
+                    new Tile(3082, 3256, 0),
+                    new Tile(3082, 3262, 0),
+                    new Tile(3083, 3269, 0),
+                    new Tile(3085, 3275, 0),
+                    new Tile(3089, 3279, 0),
+                    new Tile(3094, 3283, 0),
+                    new Tile(3100, 3285, 0)
             };
             TilePath path = ctx.movement.newTilePath(tilesToTrees);
             path.traverse();
-        } else if (ctx.bank.nearest().tile().distanceTo(ctx.players.local()) > 5) {
+        } /*else if (ctx.bank.nearest().tile().distanceTo(ctx.players.local()) > 5) {
             Tile[] tilesFromLost = new Tile[] {
                     new Tile(3276, 3418, 0),
                     new Tile(3281, 3412, 0),
@@ -89,7 +89,7 @@ public class CheckBag extends Task<ClientContext> {
             };
             TilePath path = ctx.movement.newTilePath(tilesFromLost);
             path.traverse();
-        }
+        }*/
     }
 }
 
